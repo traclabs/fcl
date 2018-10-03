@@ -22,7 +22,7 @@ namespace fcl {
     
     ~TRACCollisionObject();
 
-    void computeAABB();
+    virtual void computeAABB();
     
     void set_margin( S _margin );
     S get_margin();

@@ -46,8 +46,11 @@ namespace fcl {
   //==============================================================================
   template<typename S>
   void TRACCollisionObject<S>::computeAABB() {
-    CollisionObject<S>::computeAABB();
+    printf("TRACCollisionObject::computeAABB *********************************\n");
+    this->cgeom->computeLocalAABB();
+    printf("Add margin AABB: %f ***********************\n", margin_ );
     add_margin_AABB();
+    CollisionObject<S>::computeAABB();
   }
   
   //==============================================================================
@@ -63,15 +66,19 @@ namespace fcl {
   }
 
   //==============================================================================
+  //-- This function is only inteded to be called within computeAABB(), never on its own
   template<typename S>
   void TRACCollisionObject<S>::add_margin_AABB() {
-    fcl::Vector3<S> added_margin_min;
-    added_margin_min << aabb.min_(0)-margin_, aabb.min_(1)-margin_, aabb.min_(2)-margin_;
-    this->aabb.min_ = added_margin_min;
-    
-    fcl::Vector3<S> added_margin_max;
-    added_margin_max << aabb.max_(0)+margin_, aabb.max_(1)+margin_, aabb.max_(2)+margin_;
-    this->aabb.max_ = added_margin_max;
+
+    // Increase the radius and min/max of abb
+    this->cgeom->aabb_radius = this->cgeom->aabb_radius + margin_;
+
+    fcl::Vector3<S> min_val = this->cgeom->aabb_local.min_;
+    fcl::Vector3<S> max_val = this->cgeom->aabb_local.max_;
+
+    this->cgeom->aabb_local.min_ = min_val - fcl::Vector3<S>( margin_, margin_, margin_);
+    this->cgeom->aabb_local.max_ = max_val + fcl::Vector3<S>( margin_, margin_, margin_);
+
   }
 
   
